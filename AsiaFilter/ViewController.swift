@@ -9,6 +9,7 @@ import UIKit
 import AVKit
 import ARKit
 import RealityKit
+import CoreImage.CIFilterBuiltins
 
 final class ViewController: UIViewController {
     
@@ -27,6 +28,10 @@ final class ViewController: UIViewController {
         arView.setupARConfiguration()
         postEffect(arView: arView)
         obtainSphereEntity()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         arView.obtainPeopleOcclusion()
     }
     
@@ -51,8 +56,8 @@ final class ViewController: UIViewController {
     func filter(_ context: ARView.PostProcessContext) {
         let inputImage = CIImage(mtlTexture: context.sourceColorTexture)!
 
-        guard let filter = CIFilter(name: "CIPhotoEffectNoir") else { return }
-        filter.setValue(inputImage, forKey: "inputImage")
+        let filter = CIFilter.photoEffectNoir()
+        filter.inputImage = inputImage
         
         let destination = CIRenderDestination(mtlTexture: context.targetColorTexture,
                                               commandBuffer: context.commandBuffer)
