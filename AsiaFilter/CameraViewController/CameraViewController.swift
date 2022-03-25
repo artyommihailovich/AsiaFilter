@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  CameraViewController.swift
 //  AsiaFilter
 //
 //  Created by Artyom Mihailovich on 8/18/21.
@@ -11,7 +11,7 @@ import ARKit
 import RealityKit
 import CoreImage.CIFilterBuiltins
 
-final class ViewController: UIViewController {
+final class CameraViewController: UIViewController {
     
     @IBOutlet var arView: ARView!
     
@@ -32,10 +32,11 @@ final class ViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        UIApplication.shared.isIdleTimerDisabled = true
         arView.obtainPeopleOcclusion()
     }
     
-    func postEffect(arView: ARView) {
+    private func postEffect(arView: ARView) {
         arView.renderCallbacks.prepareWithDevice = { [weak self] device in
             self?.prepareWithDevice(device)
         }
@@ -44,16 +45,16 @@ final class ViewController: UIViewController {
         }
     }
     
-    func prepareWithDevice(_ device: MTLDevice) {
+    private func prepareWithDevice(_ device: MTLDevice) {
         self.context = CIContext(mtlDevice: device)
         self.device = device
     }
     
-    func postProcess(_ context: ARView.PostProcessContext) {
+    private func postProcess(_ context: ARView.PostProcessContext) {
         filter(context)
     }
     
-    func filter(_ context: ARView.PostProcessContext) {
+    private func filter(_ context: ARView.PostProcessContext) {
         let inputImage = CIImage(mtlTexture: context.sourceColorTexture)!
 
         let filter = CIFilter.photoEffectNoir()
@@ -67,7 +68,7 @@ final class ViewController: UIViewController {
         _ = try? self.context?.startTask(toRender: filter.outputImage!, to: destination)
     }
     
-    func obtainSphereEntity() {
+    private func obtainSphereEntity() {
         guard let path = Bundle.main.path(forResource: "Jellyfish", ofType: "mp4") else { return }
         let url = URL(fileURLWithPath: path)
         let playerItem = AVPlayerItem(url: url)
